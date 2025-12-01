@@ -146,7 +146,7 @@ public class DBProject {
       }
       stmt.close();
       return result;
-   }//end executeQueryAndReturnResult
+   }
 
    /**
     * Method to close the physical connection if it is open.
@@ -283,29 +283,52 @@ public class DBProject {
       // ...
       // ...
       try {
-         System.out.print("Enter customer id: ");
-         String id = in.readLine();
+         System.out.print("Enter customer id (only number): ");
+         String id = in.readLine().trim();
+
+         while(!id.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter customer id (only number): ");
+            id = in.readLine().trim();
+         }
 
          System.out.print("Enter first name: ");
-         String fName = in.readLine();
+         String fName = in.readLine().trim();
 
          System.out.print("Enter last name: ");
-         String lName = in.readLine();
+         String lName = in.readLine().trim();
 
          System.out.print("Enter address: ");
-         String address = in.readLine();
+         String address = in.readLine().trim();
 
          System.out.print("Enter phone number: ");
-         String phno = in.readLine();
+         String phno = in.readLine().trim();
+
+         while(!id.matches("\\d+")){ // the phone number should only contain number
+            System.out.print("Enter phone number (only number): ");
+            id = in.readLine().trim();
+         }
 
          System.out.print("Enter date of birth (YYYY-MM-DD): ");
-         String DOB = in.readLine();
+         String DOB = in.readLine().trim();
 
-         System.out.print("Enter gender (M/F): ");
-         String gender = in.readLine();
+         while (!DOB.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            System.out.println("Date format YYYY-MM-DD, please enter again: ");
+            DOB = in.readLine.trim();
+         }
+
+         System.out.print("Enter gender (M/F/Other): ");
+         String gender = in.readLine().trim();
+
+         if(gender.equals("M")){
+            gender = "Male";
+         } else if(gender.equals("F")){
+            gender = "Female";
+         } else{
+            gender = "Other";
+         }
 
          String query = "INSERT INTO Customer(customerID, fName, lName, address, phno, DOB, gender)"+
-                        "VALUES (" + id + ", "+fName +", " + lName + ", " + address + ", " + phno + ", " + DOB + ", " + gender + ")";
+                        "VALUES ('" + id + "', '"+fName +"', '" + lName + "', '" + address + "', '" + phno + "', '" + DOB + "', '" + gender + "')";
          
          esql.executeUpdate(query);
          System.out.println("Added customer");
@@ -322,16 +345,26 @@ public class DBProject {
 
       try{
          System.out.print("Enter hotel id: ");
-         String hotelID = in.readLine();
+         String hotelID = in.readLine().trim();
+
+         while(!hotelID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter hotel id (only number): ");
+            hotelID = in.readLine().trim();
+         }
 
          System.out.print("Enter room number: ");
-         String roomNo = in.readLine();
+         String roomNo = in.readLine().trim();
+
+         while(!roomNo.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter room number (only number): ");
+            roomNo = in.readLine().trim();
+         }
 
          System.out.print("Enter room type: ");
-         String type = in.readLine();
+         String type = in.readLine().trim()
 
          String query = "INSERT INTO Room(hotelID, roomNo, roomType)"+
-                        "VALUES (" + hotelID + ", " + roomNo + ", " + type + ")";
+                        "VALUES ('" + hotelID + "', '" + roomNo + "', '" + type + "')";
          esql.executeUpdate(query);
          System.out.println("Added room");
       } catch (Exception e){
@@ -345,20 +378,32 @@ public class DBProject {
       // ...
       try{
          System.out.print("Enter company id: ");
-         String companyID = in.readLine();
+         String companyID = in.readLine().trim();
+
+         while(!companyID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter company id (only number): ");
+            companyID = in.readLine().trim();
+         }
 
          System.out.print("Enter company name: ");
-         String comName = in.readLine();
+         String comName = in.readLine().trim();
 
          System.out.print("Enter company address: ");
-         String address = in.readLine();
+         String address = in.readLine().trim();
 
          System.out.print("Is the company certified? (y/n): ");
          String certInput = in.readLine().trim().toLowerCase();
+
+         if(!certInput.equals("y") && !certInput.equals("n")){
+            while(!certInput.equals("y") && !certInput.equals("n")){
+               System.out.print("Is the company certified? (y/n):");
+               certInput = in.readLine.trim().toLowerCase();
+            }
+         }
          String isCertified = certInput.equals("y")? "true" : "false";
 
          String query = "INSERT INTO MaintenanceCompany(cmpID, name, address, isCertified)" + 
-                        "VALUES (" + companyID + ", " + comName + ", " + address + ", " + isCertified + ")";
+                        "VALUES ('" + companyID + "', '" + comName + "', '" + address + "', '" + isCertified + "')";
 
          esql.executeUpdate(query);
          System.out.println("Added maintenance company");
@@ -374,28 +419,51 @@ public class DBProject {
       // ...
       try{
          System.out.print("Enter repair ID: ");
-         String rID = in.readLine();
+         String rID = in.readLine().trim();
+
+         while(!rID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter company id (only number): ");
+            rID = in.readLine().trim();
+         }
 
          System.out.print("Enter hotel ID: ");
-         String hotelID = in.readLine();
+         String hotelID = in.readLine().trim();
+
+         while(!hotelID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter hotel id (only number): ");
+            hotelID = in.readLine().trim();
+         }
 
          System.out.print("Enter room number: ");
-         String roomNo = in.readLine();
+         String roomNo = in.readLine().trim();
 
          System.out.print("Enter maintenance company ID: ");
-         String mCompany = in.readLine();
+         String mCompany = in.readLine().trim();
+
+         while(!mCompany.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter maintenance company id (only number): ");
+            mCompany = in.readLine().trim();
+         }
 
          System.out.print("Enter repair date (YYYY-MM-DD): ");
-         String date = in.readLine();
+         String date = in.readLine().trim();
 
-         System.out.print("Enter repair description: ");
-         String description = in.readLine();
+         while (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            System.out.println("Date format YYYY-MM-DD, please enter again: ");
+            date = in.readLine.trim();
+         }
+
+         System.out.print("Enter repair description (type ENTER to skip): ");
+         String description = in.readLine().trim();
+         if(description.isEmpty()){
+            description = "";
+         }
 
          System.out.print("Enter repair type: ");
-         String type = in.readLine();
+         String type = in.readLine().trim();
 
          String query = "INSERT INTO Repair(rID, hotelID, roomNo, mCompany, repairDate, description, repairType)" + 
-                        "VALUES (" + rID + ", " + hotelID + ", " + roomNo + ", "+mCompany + ", " + date + ", " + description + ", "+type + ")";
+                        "VALUES ('" + rID + "', '" + hotelID + "', '" + roomNo + "', '"+mCompany + "', '" + date + "', '" + description + "', '"+type + "')";
 
          esql.executeUpdate(query);
          System.out.println("Added repair");
@@ -411,28 +479,54 @@ public class DBProject {
       // ...
       try{
          System.out.print("Enter hotelID: ");
-         String hotelID = in.readLine();
+         String hotelID = in.readLine().trim();
+
+         while(!hotelID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter hotel id (only number): ");
+            hotelID = in.readLine().trim();
+         }
 
          System.out.print("Enter room number: ");
-         String roomNo = in.readLine();
+         String roomNo = in.readLine().trim();
 
          System.out.print("Enter customer first name: ");
-         String fName = in.readLine();
+         String fName = in.readLine().trim();
 
          System.out.print("Enter customer last name: ");
-         String lName = in.readLine();
+         String lName = in.readLine().trim();
 
          String customerQuery = "SELECT customerID FROM Customer WHERE fName = '" + fName+"' AND lName = '"+lName +"'";
-         int customerID = Integer.parseInt(esql.executeQueryAndReturnResult(customerQuery).get(0).get(0));
+         List<List<String>> result =esql.executeQueryAndReturnResult(customerQuery);
+         if(result.isEmpty()){
+            System.out.print("Customer not found. Adding new customer");
+            addCustomer(esql);
+            result =esql.executeQueryAndReturnResult(customerQuery);
+         }
+         int customerID = Integer.parseInt(result.get(0).get(0));
 
          System.out.print("Enter booking date(YYYY-MM-DD): ");
-         String bookingDate = in.readLine();
+         String bookingDate = in.readLine().trim();
+
+         while (!bookingDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            System.out.println("Date format YYYY-MM-DD, please enter again: ");
+            bookingDate = in.readLine.trim();
+         }
 
          System.out.print("Enter number of people: ");
-         String noOfPeople = in.readLine();
+         String noOfPeople = in.readLine().trim();
+
+         while(!noOfPeople.matches("\\d+")){ // the number of people should only contain number
+            System.out.print("Enter number of people (only number): ");
+            noOfPeople = in.readLine().trim();
+         }
 
          System.out.print("Enter price: ");
-         String price = in.readLine();
+         String price = in.readLine().trim();
+
+         while(!price.matches("\\d+")){ // the price should only contain number
+            System.out.print("Enter price (only number): ");
+            price = in.readLine().trim();
+         }
 
          String IDQuery = "SELECT MAX(bID) FROM Booking";
          List<List<String>> result = esql.executeQueryAndReturnResult(IDQuery);
@@ -442,7 +536,7 @@ public class DBProject {
          }
 
          String query = "INSERT INTO Booking(bID, customer, hotelID, roomNo, bookingDate, noOfPeople, price)" + 
-                        "VALUES (" + newID+ ", "+customerID + ", "+hotelID + ", "+roomNo+", "+bookingDate+", "+noOfPeople+", "+price+")";
+                        "VALUES ('" + newID+ "', '"+customerID + "', '"+hotelID + "', '"+roomNo+"', '"+bookingDate+"', '"+noOfPeople+"', '"+price+"')";
          esql.executeUpdate(query);
          System.out.println("Added booking");
       } catch (Exception e){
@@ -457,23 +551,33 @@ public class DBProject {
       // ...
       try {
          System.out.print("Enter hotelID: ");
-         String hotelID = in.readLine();
+         String hotelID = in.readLine().trim();
+
+         while(!hotelID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter hotel id (only number): ");
+            hotelID = in.readLine().trim();
+         }
 
          System.out.print("Enter staff SSN: ");
-         String ssn = in.readLine();
+         String ssn = in.readLine().trim();
+
+         while(!ssn.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter ssn (only number): ");
+            ssn = in.readLine().trim();
+         }
 
          String staffQuery ="SELECT employerID FROM Staff WHERE SSN =" + ssn;
          String staffID = esql.executeQueryAndReturnResult(staffQuery).get(0).get(0);
 
          System.out.print("Enter room number: ");
-         String roomNo = in.readLine();
+         String roomNo = in.readLine().trim();
 
          String asgIDQuery = "SELECT MAX(asgID) FROM Assigned";
          List<List<String>> result = esql.executeQueryAndReturnResult(asgIDQuery);
          int asgID = Integer.parseInt(result.get(0).get(0))+1;
 
          String query = "INSERT INTO Assigned(asgID, staffID, hotelID, roomNo)" + 
-                        "VALUES (" + asgID+", "+ staffID+", "+hotelID + ", "+roomNo + ")";
+                        "VALUES ('" + asgID+"', '"+ staffID+"', '"+hotelID + "', '"+roomNo + "')";
          esql.executeUpdate(query);
          System.out.println("Added house cleaning assignment");
       } catch (Exception e){
@@ -488,10 +592,10 @@ public class DBProject {
       // ...
       try{
          System.out.print("Enter hotelID: ");
-         String hotelID = in.readLine();
+         String hotelID = in.readLine().trim();
 
          System.out.print("Enter staff SSN: ");
-         String ssn = in.readLine();
+         String ssn = in.readLine().trim();
 
          String verifyManager = "SELECT StaffRole FROM Staff WHERE SSN=" + ssn;
          String role = esql.executeQueryAndReturnResult(verifyManager).get(0).get(0);
@@ -504,13 +608,23 @@ public class DBProject {
          String MID = esql.executeQueryAndReturnResult(MIDQuery).get(0).get(0);
 
          System.out.print("Enter room number: ");
-         String roomNo = in.readLine();
+         String roomNo = in.readLine().trim();
 
          System.out.print("Enter repair ID: ");
-         String repairID = in.readLine();
+         String repairID = in.readLine().trim();
+
+         while(!repairID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter repair id (only number): ");
+            repairID = in.readLine().trim();
+         }
 
          System.out.print("Enter date (YYYY-MM-DD): ");
-         String date = in.readLine();
+         String date = in.readLine().trim();
+
+         while (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            System.out.println("Date format YYYY-MM-DD, please enter again: ");
+            date = in.readLine.trim();
+         }
 
          String reqIDQuery = "SELECT MAX(reqID) FROM Request";
          List<List<String>> result = esql.executeQueryAndReturnResult(reqIDQuery);
@@ -524,7 +638,7 @@ public class DBProject {
          }
 
          String query = "INSERT INTO Request(reqID, managerID, repairID, requestDate, description)" + 
-                        "VALUES (" + reqID + ", "+MID+", "+repairID+", "+date+", "+desc+")";
+                        "VALUES ('" + reqID + "', '"+MID+"', '"+repairID+"', '"+date+"', '"+desc+"')";
          esql.executeUpdate(query);
          System.out.println("Added repair request");
       } catch (Exception e){
