@@ -647,21 +647,24 @@ public class DBProject {
    }//end repairRequest
    
    public static void numberOfAvailableRooms(DBProject esql){
-	  // Given a hotelID, get the count of rooms available 
+	  // 8. Given a hotelID, get the count of rooms available 
       // Your code goes here.
       // ...
       // ...
       try{
          System.out.print("\tEnter hotelID: ");
-         String input = in.readLine();
-         String query = "SELECT COUNT(*) FROM Room R WHERE R.hotelID = " + input + 
-                     " AND (R.hotelID, R.roomNo) NOT IN " +
-                     "(SELECT B.hotelID, B.roomNo FROM Booking B WHERE B.hotelID = " + input + ")";
+         String hotelID = in.readLine();
+         
+         System.out.print("\tEnter date (YYYY-MM-DD): ");
+         String date = in.readLine();
 
+         // Query: Total rooms in hotel MINUS rooms booked on that specific date
+         String query = "SELECT (SELECT COUNT(*) FROM Room WHERE hotelID = " + hotelID + ") - " +
+                        "(SELECT COUNT(*) FROM Booking WHERE hotelID = " + hotelID + " AND bookingDate = '" + date + "')";
 
          List<List<String>> result = esql.executeQueryAndReturnResult(query);
          if(result.size() > 0) {
-            System.out.println ("Number of rooms available for hotel " + input + " is "  + result.get(0).get(0));
+            System.out.println ("Number of rooms available for hotel " + hotelID + " on " + date + " is: " + result.get(0).get(0));
          }
       }catch(Exception e){
          System.err.println (e.getMessage());
@@ -672,19 +675,22 @@ public class DBProject {
    }//end numberOfAvailableRooms
    
    public static void numberOfBookedRooms(DBProject esql){
-	  // Given a hotelID, get the count of rooms booked
+	  // 9. Given a hotelID, get the count of rooms booked
       // Your code goes here.
       try{
          System.out.print("\tEnter hotelID: ");
-         String input = in.readLine();
-         String query = "SELECT COUNT(*) FROM Room R WHERE R.hotelID = " + input + 
-                     " AND (R.hotelID, R.roomNo) IN " +
-                     "(SELECT B.hotelID, B.roomNo FROM Booking B WHERE B.hotelID = " + input + ")";
+         String hotelID = in.readLine();
+         
+         System.out.print("\tEnter date (YYYY-MM-DD): ");
+         String date = in.readLine();
 
+         // Query: Count bookings for this hotel on this date
+         String query = "SELECT COUNT(*) FROM Booking WHERE hotelID = " + hotelID + 
+                        " AND bookingDate = '" + date + "'";
 
          List<List<String>> result = esql.executeQueryAndReturnResult(query);
          if(result.size() > 0) {
-            System.out.println ("Number of rooms booked for hotel " + input + " is "  + result.get(0).get(0));
+            System.out.println ("Number of rooms booked for hotel " + hotelID + " on " + date + " is: " + result.get(0).get(0));
          }
       }catch(Exception e){
          System.err.println (e.getMessage());
@@ -918,3 +924,4 @@ public class DBProject {
    }//end numberOfRepairsForEachRoomPerYear
 
 }//end DBProject
+
