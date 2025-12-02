@@ -108,21 +108,49 @@ public class DBProject {
       int numCol = rsmd.getColumnCount ();
       int rowCount = 0;
 
-      // iterates through the result set and output them to standard out.
-      boolean outputHeader = true;
+      // Collect rows first so we can calculate column widths for aligned output.
+      int[] colWidths = new int[numCol];
+      String[] headers = new String[numCol];
+      for (int i = 1; i <= numCol; i++) {
+         headers[i - 1] = rsmd.getColumnLabel(i);
+         colWidths[i - 1] = headers[i - 1].length();
+      }
+
+      List<List<String>> rows = new ArrayList<>();
       while (rs.next()){
-	 if(outputHeader){
-	    for(int i = 1; i <= numCol; i++){
-		System.out.print(rsmd.getColumnName(i) + "\t");
-	    }
-	    System.out.println();
-	    outputHeader = false;
-	 }
-         for (int i=1; i<=numCol; ++i)
-            System.out.print (rs.getString (i) + "\t");
-         System.out.println ();
-         ++rowCount;
+         List<String> row = new ArrayList<>();
+         for (int i = 1; i <= numCol; ++i) {
+            String value = rs.getString(i);
+            if (value == null) {
+               value = "";
+            }
+            row.add(value);
+            colWidths[i - 1] = Math.max(colWidths[i - 1], value.length());
+         }
+         rows.add(row);
       }//end while
+
+      // Print header
+      for (int i = 0; i < numCol; i++) {
+         System.out.printf("%-" + colWidths[i] + "s", headers[i]);
+         if (i < numCol - 1) {
+            System.out.print("  ");
+         }
+      }
+      System.out.println();
+
+      // Print rows
+      for (List<String> row : rows) {
+         for (int i = 0; i < numCol; i++) {
+            System.out.printf("%-" + colWidths[i] + "s", row.get(i));
+            if (i < numCol - 1) {
+               System.out.print("  ");
+            }
+         }
+         System.out.println();
+         ++rowCount;
+      }
+
       stmt.close ();
       return rowCount;
    }//end executeQuery
@@ -303,9 +331,9 @@ public class DBProject {
          System.out.print("Enter phone number: ");
          String phno = in.readLine().trim();
 
-         while(!id.matches("\\d+")){ // the phone number should only contain number
+         while(!phno.matches("\\d+")){ // the phone number should only contain number
             System.out.print("Enter phone number (only number): ");
-            id = in.readLine().trim();
+            phno = in.readLine().trim();
          }
 
          System.out.print("Enter date of birth (YYYY-MM-DD): ");
@@ -313,7 +341,7 @@ public class DBProject {
 
          while (!DOB.matches("\\d{4}-\\d{2}-\\d{2}")) {
             System.out.println("Date format YYYY-MM-DD, please enter again: ");
-            DOB = in.readLine.trim();
+            DOB = in.readLine().trim();
          }
 
          System.out.print("Enter gender (M/F/Other): ");
@@ -332,6 +360,9 @@ public class DBProject {
          
          esql.executeUpdate(query);
          System.out.println("Added customer");
+
+         String displayQuery = "SELECT customerID, fName, lName, address, phno, DOB, gender FROM Customer WHERE customerID = '"+id+"';";
+         esql.executeQuery(displayQuery);
       } catch (Exception e){
          System.err.println(e.getMessage());
       }
@@ -352,6 +383,9 @@ public class DBProject {
             hotelID = in.readLine().trim();
          }
 
+         String searchID = "SELECT COUNT(*) FROM Hotel WHERE hotelID='" + hotelID + "'";
+         
+
          System.out.print("Enter room number: ");
          String roomNo = in.readLine().trim();
 
@@ -361,12 +395,13 @@ public class DBProject {
          }
 
          System.out.print("Enter room type: ");
-         String type = in.readLine().trim()
+         String type = in.readLine().trim();
 
          String query = "INSERT INTO Room(hotelID, roomNo, roomType)"+
                         "VALUES ('" + hotelID + "', '" + roomNo + "', '" + type + "')";
          esql.executeUpdate(query);
          System.out.println("Added room");
+         esql.executeQuery("SELECT hotelID, roomNo, roomType FROM Room");
       } catch (Exception e){
          System.err.println (e.getMessage());
       }
@@ -397,7 +432,7 @@ public class DBProject {
          if(!certInput.equals("y") && !certInput.equals("n")){
             while(!certInput.equals("y") && !certInput.equals("n")){
                System.out.print("Is the company certified? (y/n):");
-               certInput = in.readLine.trim().toLowerCase();
+               certInput = in.readLine().trim().toLowerCase();
             }
          }
          String isCertified = certInput.equals("y")? "true" : "false";
@@ -418,14 +453,6 @@ public class DBProject {
       // ...
       // ...
       try{
-         System.out.print("Enter repair ID: ");
-         String rID = in.readLine().trim();
-
-         while(!rID.matches("\\d+")){ // the id should only contain number
-            System.out.print("Enter company id (only number): ");
-            rID = in.readLine().trim();
-         }
-
          System.out.print("Enter hotel ID: ");
          String hotelID = in.readLine().trim();
 
@@ -450,7 +477,7 @@ public class DBProject {
 
          while (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
             System.out.println("Date format YYYY-MM-DD, please enter again: ");
-            date = in.readLine.trim();
+            date = in.readLine().trim();
          }
 
          System.out.print("Enter repair description (type ENTER to skip): ");
@@ -459,11 +486,18 @@ public class DBProject {
             description = "";
          }
 
+         int rID = 1;
+         String getRID = "SELECT MAX(rID) FROM Repair";
+         List<List<String>> rIDResult = esql.executeQueryAndReturnResult(getRID);
+         if(rIDResult.size() > 0 && rIDResult.get(0).get(0) != null){
+            rID = Integer.parseInt(rIDResult.get(0).get(0)) +1;
+         }
+
          System.out.print("Enter repair type: ");
          String type = in.readLine().trim();
 
          String query = "INSERT INTO Repair(rID, hotelID, roomNo, mCompany, repairDate, description, repairType)" + 
-                        "VALUES ('" + rID + "', '" + hotelID + "', '" + roomNo + "', '"+mCompany + "', '" + date + "', '" + description + "', '"+type + "')";
+                        "VALUES ('" + String.valueOf(rID) + "', '" + hotelID + "', '" + roomNo + "', '"+mCompany + "', '" + date + "', '" + description + "', '"+type + "')";
 
          esql.executeUpdate(query);
          System.out.println("Added repair");
@@ -496,20 +530,20 @@ public class DBProject {
          String lName = in.readLine().trim();
 
          String customerQuery = "SELECT customerID FROM Customer WHERE fName = '" + fName+"' AND lName = '"+lName +"'";
-         List<List<String>> result =esql.executeQueryAndReturnResult(customerQuery);
-         if(result.isEmpty()){
+         List<List<String>> IDresult =esql.executeQueryAndReturnResult(customerQuery);
+         if(IDresult.isEmpty()){
             System.out.print("Customer not found. Adding new customer");
             addCustomer(esql);
-            result =esql.executeQueryAndReturnResult(customerQuery);
+            IDresult =esql.executeQueryAndReturnResult(customerQuery);
          }
-         int customerID = Integer.parseInt(result.get(0).get(0));
+         int customerID = Integer.parseInt(IDresult.get(0).get(0));
 
          System.out.print("Enter booking date(YYYY-MM-DD): ");
          String bookingDate = in.readLine().trim();
 
          while (!bookingDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
             System.out.println("Date format YYYY-MM-DD, please enter again: ");
-            bookingDate = in.readLine.trim();
+            bookingDate = in.readLine().trim();
          }
 
          System.out.print("Enter number of people: ");
@@ -623,7 +657,7 @@ public class DBProject {
 
          while (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
             System.out.println("Date format YYYY-MM-DD, please enter again: ");
-            date = in.readLine.trim();
+            date = in.readLine().trim();
          }
 
          String reqIDQuery = "SELECT MAX(reqID) FROM Request";
