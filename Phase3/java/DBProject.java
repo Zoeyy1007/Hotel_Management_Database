@@ -384,7 +384,11 @@ public class DBProject {
          }
 
          String searchID = "SELECT COUNT(*) FROM Hotel WHERE hotelID='" + hotelID + "'";
-         
+         List<List<String>> hotelIDSet = esql.executeQueryAndReturnResult(searchID);
+         if(hotelIDSet.size() == 0){//
+            System.out.print("Hotel id: " + hotelID + " not found");
+            return;
+         }
 
          System.out.print("Enter room number: ");
          String roomNo = in.readLine().trim();
@@ -401,7 +405,7 @@ public class DBProject {
                         "VALUES ('" + hotelID + "', '" + roomNo + "', '" + type + "')";
          esql.executeUpdate(query);
          System.out.println("Added room");
-         esql.executeQuery("SELECT hotelID, roomNo, roomType FROM Room");
+         esql.executeQuery("SELECT hotelID, roomNo, roomType FROM Room WHERE hotelID='" + hotelID+"' AND roomNo='" + roomNo + "' AND roomType='"+type+"'");
       } catch (Exception e){
          System.err.println (e.getMessage());
       }
@@ -442,6 +446,7 @@ public class DBProject {
 
          esql.executeUpdate(query);
          System.out.println("Added maintenance company");
+         esql.executeQuery("SELECT cmpID, name, address, isCertified FROM MaintenanceCompany WHERE cmpID='" + companyID+"'");
       } catch (Exception e){
          System.err.println(e.getMessage());
       }
@@ -461,8 +466,22 @@ public class DBProject {
             hotelID = in.readLine().trim();
          }
 
+         String searchID = "SELECT COUNT(*) FROM Hotel WHERE hotelID='" + hotelID + "'";
+         List<List<String>> hotelIDSet = esql.executeQueryAndReturnResult(searchID);
+         if(hotelIDSet.size() == 0){//
+            System.out.print("Hotel id: " + hotelID + " not found");
+            return;
+         }
+
          System.out.print("Enter room number: ");
          String roomNo = in.readLine().trim();
+
+         String searchRoomID = "SELECT COUNT(*) FROM Room WHERE hotelID='" + hotelID + "' AND roomNo='" + roomNo + "'";
+         List<List<String>> RoomIDSet = esql.executeQueryAndReturnResult(searchID);
+         if(RoomIDSet.size() == 0){//
+            System.out.print("Room id: " + roomNo + " not found");
+            return;
+         }
 
          System.out.print("Enter maintenance company ID: ");
          String mCompany = in.readLine().trim();
