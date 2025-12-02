@@ -14,12 +14,6 @@ ON Customer
 USING BTREE
 (fName, lName);
 
--- Staff Lookups 2
-CREATE INDEX idx_staff_ssn
-ON Staff
-USING BTREE
-(SSN);
-
 -- Booking Lookups by Hotel & Date 3, 4, 5
 CREATE INDEX idx_booking_hotel_date
 ON Booking
