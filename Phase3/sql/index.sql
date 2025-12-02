@@ -1,27 +1,63 @@
--- Customer Lookups a customer ID From thier name (5, 12, 13)
-CREATE INDEX idx_customer_name ON Customer(fName, lName);
+DROP INDEX IF EXISTS idx_customer_name;
+DROP INDEX IF EXISTS idx_staff_ssn;
+DROP INDEX IF EXISTS idx_booking_hotel_date;
+DROP INDEX IF EXISTS idx_booking_customer;
+DROP INDEX IF EXISTS idx_booking_date;
+DROP INDEX IF EXISTS idx_repair_company;
+DROP INDEX IF EXISTS idx_repair_hotel_room;
+DROP INDEX IF EXISTS idx_mcompany_name;
+DROP INDEX IF EXISTS idx_room_hotel;
 
--- Staff Lookups with staff by SSN(6, 7)
-CREATE INDEX idx_staff_ssn ON Staff(SSN);
+-- Customer Lookups 1, 7, 8 
+CREATE INDEX idx_customer_name
+ON Customer
+USING BTREE
+(fName, lName);
 
--- Booking Lookups by Hotel & Date (10)
-CREATE INDEX idx_booking_hotel_date ON Booking(hotelID, bookingDate);
+-- Staff Lookups 2
+CREATE INDEX idx_staff_ssn
+ON Staff
+USING BTREE
+(SSN);
 
--- Booking Lookups by Customer (12, 13)
-CREATE INDEX idx_booking_customer ON Booking(customer);
+-- Booking Lookups by Hotel & Date 3, 4, 5
+CREATE INDEX idx_booking_hotel_date
+ON Booking
+USING BTREE
+(hotelID, bookingDate);
 
--- Booking Date Searches in a date range (11)
-CREATE INDEX idx_booking_date ON Booking(bookingDate);
+-- Booking Lookups by Customer 7, 8
+CREATE INDEX idx_booking_customer
+ON Booking
+USING BTREE
+(customer);
 
--- Repair Lookups by Company (14, 15)
-CREATE INDEX idx_repair_company ON Repair(mCompany);
+-- General Booking Date Range 6
+CREATE INDEX idx_booking_date
+ON Booking
+USING BTREE
+(bookingDate);
 
--- Repair Lookups by Room (16)
-CREATE INDEX idx_repair_hotel_room ON Repair(hotelID, roomNo);
+-- Repair Lookups by Company 9, 10
+CREATE INDEX idx_repair_company
+ON Repair
+USING BTREE
+(mCompany);
 
--- Maintenance Company Name Lookups to find company ID from the name string (14)
-CREATE INDEX idx_mcompany_name ON MaintenanceCompany(name);
+-- Repair Lookups by Room 11
+CREATE INDEX idx_repair_hotel_room
+ON Repair
+USING BTREE
+(hotelID, roomNo);
 
--- Room Availability for available/booked room queries Checks (8, 9)
-CREATE INDEX idx_room_hotel ON Room(hotelID);
-CREATE INDEX idx_booking_hotel ON Booking(hotelID);
+-- Maintenance Company Name Lookups 9
+CREATE INDEX idx_mcompany_name
+ON MaintenanceCompany
+USING BTREE
+(name);
+
+-- Room Availability 3 Lookups
+CREATE INDEX idx_room_hotel
+ON Room
+USING BTREE
+(hotelID);
