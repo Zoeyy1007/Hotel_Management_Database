@@ -477,7 +477,7 @@ public class DBProject {
          String roomNo = in.readLine().trim();
 
          String searchRoomID = "SELECT COUNT(*) FROM Room WHERE hotelID='" + hotelID + "' AND roomNo='" + roomNo + "'";
-         List<List<String>> RoomIDSet = esql.executeQueryAndReturnResult(searchID);
+         List<List<String>> RoomIDSet = esql.executeQueryAndReturnResult(searchRoomID);
          if(RoomIDSet.size() == 0){//
             System.out.print("Room id: " + roomNo + " not found");
             return;
@@ -489,6 +489,13 @@ public class DBProject {
          while(!mCompany.matches("\\d+")){ // the id should only contain number
             System.out.print("Enter maintenance company id (only number): ");
             mCompany = in.readLine().trim();
+         }
+
+         String searchMID = "SELECT COUNT(*) FROM MaintenanceCompany WHERE cmpID='"+mCompany + "'";
+         List<List<String>> CompanySet = esql.executeQueryAndReturnResult(searchMID);
+         if(CompanySet.size() == 0){//
+            System.out.print("Company id: " + mCompany + " not found");
+            return;
          }
 
          System.out.print("Enter repair date (YYYY-MM-DD): ");
@@ -520,6 +527,7 @@ public class DBProject {
 
          esql.executeUpdate(query);
          System.out.println("Added repair");
+         esql.executeQuery("SELECT rID, hotelID, roomNo, mCompany, repairDate, description, repairType FROM Repair WHERE rID='" + rID + "'");
       } catch (Exception e){
          System.err.println(e.getMessage());
       }
@@ -539,8 +547,22 @@ public class DBProject {
             hotelID = in.readLine().trim();
          }
 
+         String searchID = "SELECT COUNT(*) FROM Hotel WHERE hotelID='" + hotelID + "'";
+         List<List<String>> hotelIDSet = esql.executeQueryAndReturnResult(searchID);
+         if(hotelIDSet.size() == 0){//
+            System.out.print("Hotel id: " + hotelID + " not found");
+            return;
+         }
+
          System.out.print("Enter room number: ");
          String roomNo = in.readLine().trim();
+
+         String searchRoomID = "SELECT COUNT(*) FROM Room WHERE hotelID='" + hotelID + "' AND roomNo='" + roomNo + "'";
+         List<List<String>> RoomIDSet = esql.executeQueryAndReturnResult(searchRoomID);
+         if(RoomIDSet.size() == 0){//
+            System.out.print("Room id: " + roomNo + " not found");
+            return;
+         }
 
          System.out.print("Enter customer first name: ");
          String fName = in.readLine().trim();
@@ -555,7 +577,7 @@ public class DBProject {
             addCustomer(esql);
             IDresult =esql.executeQueryAndReturnResult(customerQuery);
          }
-         int customerID = Integer.parseInt(IDresult.get(0).get(0));
+         String customerID = IDresult.get(0).get(0);
 
          System.out.print("Enter booking date(YYYY-MM-DD): ");
          String bookingDate = in.readLine().trim();
@@ -592,6 +614,7 @@ public class DBProject {
                         "VALUES ('" + newID+ "', '"+customerID + "', '"+hotelID + "', '"+roomNo+"', '"+bookingDate+"', '"+noOfPeople+"', '"+price+"')";
          esql.executeUpdate(query);
          System.out.println("Added booking");
+         esql.executeQuery("SELECT bID, customer, hotelID, roomNo, bookingDate, noOfPeople, price FROM Booking WHERE bID='"+newID+"'");
       } catch (Exception e){
          System.err.println(e.getMessage());
       }
@@ -619,8 +642,12 @@ public class DBProject {
             ssn = in.readLine().trim();
          }
 
-         String staffQuery ="SELECT employerID FROM Staff WHERE SSN =" + ssn;
-         String staffID = esql.executeQueryAndReturnResult(staffQuery).get(0).get(0);
+         String staffQuery ="SELECT employerID FROM Staff WHERE SSN ='" + ssn  + "'";
+         List<List<String>> StaffIDSet = esql.executeQueryAndReturnResult(staffQuery);
+         if(StaffIDSet.size() == 0){
+            System.out.print("Staff with ssn: " + ssn + " not found");
+            return;
+         }
 
          System.out.print("Enter room number: ");
          String roomNo = in.readLine().trim();
@@ -630,9 +657,10 @@ public class DBProject {
          int asgID = Integer.parseInt(result.get(0).get(0))+1;
 
          String query = "INSERT INTO Assigned(asgID, staffID, hotelID, roomNo)" + 
-                        "VALUES ('" + asgID+"', '"+ staffID+"', '"+hotelID + "', '"+roomNo + "')";
+                        "VALUES ('" + asgID+"', '"+ ssn+"', '"+hotelID + "', '"+roomNo + "')";
          esql.executeUpdate(query);
          System.out.println("Added house cleaning assignment");
+         esql.executeQuery("SELECT asgID, staffID, hotelID, roomNo FROM Assigned WHERE asgID='" + asgID + "'");
       } catch (Exception e){
          System.err.println(e.getMessage());
       }
@@ -647,18 +675,37 @@ public class DBProject {
          System.out.print("Enter hotelID: ");
          String hotelID = in.readLine().trim();
 
+         while(!hotelID.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter hotel id (only number): ");
+            hotelID = in.readLine().trim();
+         }
+
+         String searchID = "SELECT COUNT(*) FROM Hotel WHERE hotelID='" + hotelID + "'";
+         List<List<String>> hotelIDSet = esql.executeQueryAndReturnResult(searchID);
+         if(hotelIDSet.size() == 0){//
+            System.out.print("Hotel id: " + hotelID + " not found");
+            return;
+         }
+
          System.out.print("Enter staff SSN: ");
          String ssn = in.readLine().trim();
 
-         String verifyManager = "SELECT StaffRole FROM Staff WHERE SSN=" + ssn;
-         String role = esql.executeQueryAndReturnResult(verifyManager).get(0).get(0);
+         while(!ssn.matches("\\d+")){ // the id should only contain number
+            System.out.print("Enter ssn (only number): ");
+            ssn = in.readLine().trim();
+         }
+
+         String verifyManager = "SELECT role FROM Staff WHERE SSN=" + ssn;
+         List<List<String>> staffSet = esql.executeQueryAndReturnResult(verifyManager);
+         if(staffSet.size() == 0){
+            System.out.print("Staff with ssn: " + ssn + " not found");
+            return;
+         }
+         String role = staffSet.get(0).get(0);
          if(!role.equals("Manager")){
             System.out.println("Only manager can request repair. ");
             return;
          }
-
-         String MIDQuery = "SELECT employerID FROM Staff WHERE SSN=" + ssn;
-         String MID = esql.executeQueryAndReturnResult(MIDQuery).get(0).get(0);
 
          System.out.print("Enter room number: ");
          String roomNo = in.readLine().trim();
@@ -680,8 +727,12 @@ public class DBProject {
          }
 
          String reqIDQuery = "SELECT MAX(reqID) FROM Request";
+         int reqID = 1;
          List<List<String>> result = esql.executeQueryAndReturnResult(reqIDQuery);
-         int reqID = Integer.parseInt(result.get(0).get(0))+1;
+         if(result.size() > 0 && result.get(0).get(0) != null){
+            reqID = Integer.parseInt(result.get(0).get(0))+1;
+         }
+         
 
          System.out.print("Enter description (optional, press ENTER to skip): ");
          String desc = in.readLine().trim();
@@ -691,9 +742,10 @@ public class DBProject {
          }
 
          String query = "INSERT INTO Request(reqID, managerID, repairID, requestDate, description)" + 
-                        "VALUES ('" + reqID + "', '"+MID+"', '"+repairID+"', '"+date+"', '"+desc+"')";
+                        "VALUES ('" + reqID + "', '"+ssn+"', '"+repairID+"', '"+date+"', '"+desc+"')";
          esql.executeUpdate(query);
          System.out.println("Added repair request");
+         esql.executeQuery("SELECT reqID, managerID, repairID, requestDate, description FROM Request WHERE reqID = '"+reqID + "'");
       } catch (Exception e){
          System.err.println(e.getMessage());
       }
